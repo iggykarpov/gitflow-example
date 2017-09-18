@@ -1,2 +1,2 @@
-testing gitflow
+testing giftflow
 i just added feature1 to the project, by adding this line.
