@@ -1,1 +1,2 @@
 testing gitflow
+i just added feature1 to the project, by adding this line.
