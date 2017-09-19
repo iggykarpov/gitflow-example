@@ -1,0 +1,170 @@
+html, body { overflow: hidden; }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	line-height: 14px;
+	margin: 0; padding: 0;
+	background-color: white;
+	cursor: default;	
+}
+
+h2 { font-family: Arial, Helvetica, sans-serif; font-size: 14px; margin: 0; }
+
+form { margin: 0; padding: 0; }
+
+#loading {
+	background-image:url(../images/spinner.gif);
+	background-color: #fff;
+	background-repeat:no-repeat;
+	background-position:50% 50%;
+	position: fixed;
+	height:100%;
+	width:100%;
+	left:0;
+	top:0;
+	z-index:10000;
+	opacity: 0.5;
+} 
+
+#buttonsOkCancel { display: none; }
+#buttonsClose { display: none; }
+.readonly { color: orange; font-style: italic; font-weight: bolder; padding-left: 10px; }
+#buttonsReopen{ position: absolute; left: 10px; top: 35px; display: none; z-index: 500; }
+
+
+input.submit {
+	display: inline-block;
+	padding: 4px 10px;
+	background-color: #EEEEEB;
+	background-image: url(../images/button-bg.png);
+	background-position: 0 -10px;
+	background-repeat: repeat-x;
+	border: 1px solid silver;
+	border-radius: 4px;
+	font-weight: bold;
+	font-size: 11px;
+	cursor: pointer;
+	color: #5C594C;
+}
+
+input.milestonedate { display: none; font-size: 10px; width: 65px; top: -9px; left: 7px; position: absolute; text-align: center; }
+
+textarea { font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 14px; }
+td { font-family: Arial, Helvetica, sans-serif; font-size: 11px; line-height: 16px; }
+
+a, a:link, a:active, a:visited { color: #0081d1; }
+
+.byline { font-size: 10px; color: gray; }
+
+.box { border: 1px solid #999998; margin: 0; height: 330px; overflow: auto; position: relative;}
+
+table { table-layout: fixed; }
+
+#headers { margin-top: 30px; visibility: hidden; }
+#milestones { margin: 0; background-color: #f9f9f9; }
+
+tr.error td { background-color: #FDC0A1; }
+tr.error td.gutter { background-color: #e9e9e9; }
+tr td.error { background-color: #FEA570; }
+
+div#errors {  position: absolute; display: none; right:0; width: 550px; top: 5px; background-color: #FFE7E7; border: 1px solid #DF9898; z-index: 10000; }
+div#errors .main { }
+div#errors ul { margin: 0; padding: 0; color: black; height: 40px;  overflow: auto; text-align: left; }
+div#errors ul li { padding: 4px 10px; }
+div#errors .hidelink { text-align: right; font-size: 10px; padding-right: 20px; }
+
+/*
+#milestones th { font-size: 12px; border-bottom: 1px solid #bebebe; }
+#milestones th.gutter { cursor: default;width: 35px;border-right: 1px solid white;border-bottom: 1px solid white;text-align: right;background-color: white;font-weight: bolder;color: orange;}
+*/
+
+#otherdates { display: none; margin: 0; background-color: white; }
+#otherdates td.header { font-weight: bolder; }
+
+tr.milestone { background-color: #edecec; }
+tr.milestone.hover { background-color: #e0e0e0; }
+tr.milestone td { border-bottom: 1px solid #bebebe; color: #6b6a6a; font-size: 11px; line-height: 14px;  }
+tr.milestone td { border-top: 1px solid white; }
+tr.milestone td span.clickable { cursor: pointer; }
+tr.milestone td span.nonclickable { cursor: default; }
+tr.milestone td.header { background-color: #dbdbda; color: #4c4a41; }
+tr.milestone td.milestonename { text-align:left; }
+
+tr.milestone td.approaching { font-weight: bolder; color: green; font-size: 10px; cursor: default; }
+tr.milestone td.late { font-weight: bolder; color: red;  font-size: 10px;  cursor: default;  }
+tr.milestone td.gutter {
+	cursor: default;
+	width: 35px;
+	border-right: 1px solid #bebebe;
+	border-top: 1px solid #f9f9f9;
+	border-bottom: 1px solid #f9f9f9;
+	text-align: right;
+	background-color: #f9f9f9;
+	font-weight: bolder;
+	color: orange;
+}
+tr.milestone td.next { border-right: 4px solid orange; }
+
+.resetDate { vertical-align: middle; position: absolute; right: 5px; }
+.milestonemarker{}
+
+.branchname { text-indent: 20px; }
+.branchname span { text-indent: 20px;  font-size: 10px; }
+.branchmilestone { display: none; background-color: #f9f9f9 !important; }
+.branchmilestone .milestonename { text-indent: 40px; }
+
+.branchheader {
+	background-color: #d5d4d1;
+	color: #4c4a41;
+	font-weight: bolder;
+	font-size: 11px;
+	line-height: 13px;
+	cursor: pointer;
+	padding-left: 20px;
+	background-image: url(../images/icon_expand_large_12x12.png);
+	background-repeat: no-repeat;
+	background-position: 4px 5px;
+}
+.branchheader.expanded {
+	background-image: url(../images/icon_collapse_large_12x12.png);
+}
+
+.dateHolder{position: relative;}
+
+#publishmessage {
+}
+
+ul.milestoneMenu { list-style-type:none; margin:0; padding:0; overflow:hidden; margin: 10px 0 0 20px; }
+ul.milestoneMenu li { float: left; color:black; border: 1px solid #858585; width:100px; line-height:15px; text-align: center; font-weight:bold; }
+ul.milestoneMenu li.active { border-top-style: solid; border-right-style: solid; border-bottom: 1px solid white; border-left-style: solid; border-top-left-radius: 4px;  border-top-right-radius: 4px; }
+ul.milestoneMenu li.nonactive { border-top: 1px solid white; border-right-style:none; border-bottom-style:solid; border-left-style:none; }
+ul.milestoneMenu li.active a { color: #515151; text-decoration:none; }
+ul.milestoneMenu li.nonactive a { color: #A1A1A1; text-decoration:none; }
+
+
+#debug { position: absolute; bottom: 10px; right: 50px; padding: 20px; width: 400px; height: 200px; overflow: auto; background-color: white; display:none; }
+
+
+div#readOnlyMode { position: absolute; left: 50%; margin-left: -20px; top: 5px; z-index: 9999; display: none; }
+div#readOnlyMode .readOnlyIcon { width: 40px; height: 40px; background-image: url(../images/icon_lock_40x40.png); cursor: pointer; }
+div#readOnlyMode .readOnlyIcon:hover { background-image: url(../images/icon_lock_hover_40x40.png); }
+div#readOnlyMode .readOnlyMessage { display: none; position: relative; top: 10px; background-color: #fff; border: 1px solid #5c594c; }
+div#readOnlyMode .readOnlyMessage .readOnlyMessageContent { padding: 10px; box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); color: #000; }
+div#readOnlyMode .readOnlyMessage .readOnlyMessageContent .readOnlyArrow { 
+	width: 0;
+	height: 0;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-bottom: 10px solid #5c594c;
+	position: absolute;
+	top: -11px;
+	left: 10px;
+}
+div#readOnlyMode .readOnlyMessage .readOnlyMessageContent .readOnlyTitle { height: 15px; font-weight: bold; max-width: 445px; }
+div#readOnlyMode .readOnlyMessage .readOnlyMessageContent p { margin: 2px 0 5px 0; padding: 0 5px; max-width: 450px; }
+div#readOnlyMode .readOnlyMessage .readOnlyMessageContent ul { margin: 0; padding: 0 0 0 30px; }
+div#readOnlyMode .readOnlyMessage .readOnlyMessageContent ul li { max-width: 425px; }
+
+div.examCloseReports { max-height: 170px; }
+div.examCloseReports ul {  }
+div.examCloseReports ul li { line-height: 20px; }

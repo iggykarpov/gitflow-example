@@ -1,0 +1,178 @@
+<!--
+  $Id: hudson-build.xml,v 1.26, 2012-08-25 12:47:34Z, Renbaum, Jay$
+  
+  Copyright 2008 FINRA. All rights reserved. Unpublished - Rights
+  reserved under the copyright laws of the United States and international
+  conventions. Use of a copyright notice is precautionary only and does not
+  imply publication or disclosure. This software contains confidential
+  information and trade secrets of FINRA. Use, disclosure, or reproduction
+  is prohibited without the prior written consent of FINRA.
+-->
+
+<project name="cm-build" default="cm-build-all" basedir=".">
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+    
+    <!-- Load build.properties from CM folder -->
+    <property file="build.properties"/>
+    
+    <!-- Importing environment variables -->
+    <property environment="env"/>
+    
+    <!-- We want to set cm.label and cm.buildid using the component abbreviation to distiguish between builds and to avoid conflict if 2 builds start at the same time.
+         However, now that the timestamp format includes the 'T' in the BUILD_TIMESTAMP variable we need to convert this using propertyregex and THEN set cm.labe and cm.buildid using
+         the new cm.timestamp value. The cm.label param is passed into cm-init. If this is not done, the ${c_abbr} value will not be present and all labels will look the same -->
+
+    <propertyregex property="cm.timestamp"
+        input="${env.BUILD_TIMESTAMP}"
+        regexp="(\d\d\d\d\d\d\d\d)(T)*(\d\d\d\d\d\d)"
+        replace="\1\3"
+        casesensitive="false"
+        defaultValue=" *** Invalid env.BUILD_TIMESTAMP *** " />
+
+    <condition property="iteration.tmp" value="-${projectIteration}" else=""> <isset property="projectIteration"/> </condition>
+    <property name="cm.label" value="${projectName}-${c_abbr}-${projectVersion}${iteration.tmp}-${cm.timestamp}" />
+    <property name="cm.buildid" value="${cm.label}" />
+    
+    <!-- Importing common cm file standard targets
+         Location is defined as Hudson environment Variable -->
+
+    <import file="${env.APP_UTIL_DIR}/${env.COMMON_TASKS_SCRIPT}"/>
+    
+    <property name="dist.dir" location="${cm.workspace.dir}/dist" />
+
+    <!--Condition check for auto-deploy -->
+    <condition property="auto_deploy" value="true" else="false">
+      <istrue value="${TOMCAT_AUTO_DEPLOY}"/>
+    </condition>
+
+    <target name="cm-build-all" description="Full CM build.">
+        <!-- <property name="cm.checkout.list" value="./${checkoutFolderName}, ." /> -->
+
+        <antcall target="cm-init">
+            <!-- Pass in the cm.label property set here to include projectIteration. If not passed in, it is lost -->
+            <param name="cm.label" value="${cm.label}"/>
+        </antcall>
+
+        <stopwatch name="TimeToSLOC" action="start"/>
+        <antcall target="cm-calculate-sloc"/>
+        <stopwatch name="TimeToSLOC" action="total"/>
+        <stopwatch name="TimeToBuild" action="start"/>
+
+        <!--Resolve dependencies-->
+      <!--  <exec dir="${cm.checkout.dir}" executable="mvn" failonerror="false" output="${cm.workspace.dir}/mvn_dependency_analysis.txt" taskname="maven_dep_rpt">
+        <arg line="-Djava.awt.headless=true -Dmaven.test.skip=true -Dcm.buildid=${cm.buildid} dependency:resolve"/>
+        </exec>
+         -->
+
+        <!-- The actual build of the software via maven2.2.1 -->
+        <exec dir="${cm.workspace.dir}/checkout" executable="${MAVEN_HOME}/bin/mvn" failonerror="true" taskname="maven build">
+            <arg line="-Djava.awt.headless=true -Dcm.buildid=${cm.buildid} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DskipTests=true package -P cm-profile"/>
+        </exec>
+        <stopwatch name="TimeToBuild" action="total"/>
+
+        <antcall target="cm-publish-all"/>
+        <antcall target="delete-top-level-war-and-zips"/>
+    </target>
+
+    <target name="cm-dist" description="Copy config files to the distribution dir prior to cm-release target">
+
+        <mkdir dir="${cm.checkout.dir}/dist" />
+
+        <!-- Set properties for CM process -->
+        <property name="build.prop.file" location="${cm.workspace.dir}/build.properties"/> 
+
+        <!-- this will be used when zipping up the static content into the webapp.zip file -->
+        <property name="webapp.dir" location="${cm.checkout.dir}/src/main/webapp"/> 
+
+        <!-- Add autodeploy value to build.properties file if selected -->
+        <antcall target="append-to-build-prop-file"/>
+
+        <!-- Copy blogic.properties and the build.properties files to dist folder -->
+        <copy todir="${cm.release.dir}" verbose="true" >
+            <fileset file="${build.prop.file}"/>
+        </copy>
+
+        <!-- copy files from checkout/target to dist to prep for the cm-release target -->
+        <copy todir="${dist.dir}" failonerror="true" verbose="true" flatten="true">
+            <fileset dir="${cm.checkout.dir}/target">
+              <include name="*war"/>
+              <include name="*zip"/>
+          </fileset>
+        </copy>
+
+        <!-- copy the deploy.properties file to the release directory -->
+        <copy file="${basedir}/deploy.properties"                     todir="${cm.release.dir}"/>
+
+        <!-- Create webapp_dir folder to contain the webapp.zip, buildinfo, deploy.properties and the deploy script -->
+
+        <echo message="... creating bl_webapp folder with zip file ..."/>
+
+        <mkdir dir="${cm.release.dir}/bl_webapp_dir" />
+        <copy file="${cm.release.dir}/buildinfo"                      todir="${cm.release.dir}/bl_webapp_dir"/>
+        <copy file="${basedir}/deploy.properties"                     todir="${cm.release.dir}/bl_webapp_dir"/>
+        <copy file="${basedir}/web_deploy.sh"                         todir="${cm.release.dir}/bl_webapp_dir"/>
+
+        <!-- Now copy the environment specific zip files so the config.js file can find its way to the apache server -->
+        <copy todir="${cm.release.dir}/bl_webapp_dir">
+          <fileset dir="${dist.dir}">
+              <include name="*.zip"/>
+          </fileset>
+        </copy>
+
+        <!-- Create webapp.zip file for deployment to the apache server -->
+        <zip destfile="${cm.release.dir}/bl_webapp_dir/${c_abbr}_webapp.zip" >
+            <zipfileset dir="${webapp.dir}" prefix="${c_abbr}" excludes="WEB-INF/**, **.jsp" />
+        </zip>
+
+        <!-- Create bl_stage_war_dir sub-folder in the release folder that contains the scripts with the war and zip files: 
+             deploy.sh  
+             deploy.properties
+             *.war
+             *.zip -->
+
+        <echo message="... creating stage folder with war file ..."/>
+
+        <mkdir dir="${cm.release.dir}/bl_stage_war_dir" />
+        <copy file="${cm.release.dir}/buildinfo"                      todir="${cm.release.dir}/bl_stage_war_dir"/>
+        <copy file="${basedir}/deploy.properties"                     todir="${cm.release.dir}/bl_stage_war_dir"/>
+        <copy file="${basedir}/deploy.sh"                             todir="${cm.release.dir}/bl_stage_war_dir"/>
+
+        <copy todir="${cm.release.dir}/bl_stage_war_dir">
+          <fileset dir="${dist.dir}">
+              <include name="*.zip"/>
+              <include name="*.war"/>
+          </fileset>
+        </copy>
+
+        <!-- Create bl_scripts_dir sub-folder in the release folder that contains the scripts without the war or zip files: 
+             deploy.sh  
+             deploy.properties
+             *.zip -->
+
+        <echo message="... creating scripts folder without war file ..."/>
+
+        <mkdir dir="${cm.release.dir}/bl_scripts_dir" />
+        <copy file="${cm.release.dir}/buildinfo"                      todir="${cm.release.dir}/bl_scripts_dir"/>
+        <copy file="${basedir}/deploy.properties"                     todir="${cm.release.dir}/bl_scripts_dir"/>
+        <copy file="${basedir}/deploy.sh"                             todir="${cm.release.dir}/bl_scripts_dir"/>
+    </target>
+
+    <target name="delete-top-level-war-and-zips" description="delete top level war and zip files to avoid duplications and disk space issues" >
+        <!-- Now delete the .war and .zip files from the top level of the publish dir to avoid disk space issues as these files are present where 
+             they need to be in the bl_stage_war_dir folder -->
+        <echo message="... deleting .war and .zip files from ${cm.publish.dir} directory..."/>
+        <delete>
+          <fileset dir="${cm.publish.dir}" includes="*.zip,*.war"/>
+        </delete>
+    </target>
+
+    <target name="append-to-build-prop-file" description="set auto_deploy and deploy_env" >
+        <propertyfile file="${build.prop.file}">
+            <entry key="auto_deploy" value="${auto_deploy}"/>
+            <entry key="deploy_env" value="${DEPLOY_ENV}"/>
+        </propertyfile>
+    </target>
+
+</project>  
+

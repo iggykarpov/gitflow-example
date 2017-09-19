@@ -1,0 +1,30 @@
+// partials
+@import "partials/roboto-font";
+@import "partials/variables";
+@import "partials/core";
+
+
+
+/* IE 10+ */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  #header td:last-child {
+    border-right: 1px solid #999999;
+    height: 28px;
+    width: 110px;
+  }
+}
+
+/* fix browser scrollbar overlapping content issue */
+@-ms-viewport{
+  width:auto!important;
+}
+
+@media (max-width: 1346px) {
+  body {
+    overflow-x: scroll;
+
+  }
+  #pagination {
+    bottom: 20px;
+  }
+}

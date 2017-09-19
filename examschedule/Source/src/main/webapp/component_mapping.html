@@ -1,0 +1,97 @@
+<!doctype html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Exam Components Mapping</title>
+
+
+<link rel="stylesheet" type="text/css"	href="lib/jquery/jquery-ui-1.11.3/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="lib/datatables/datatables.min.css"/>
+<link rel="stylesheet" type="text/css"	href="lib/dialog/2.0/css/exam.css">
+
+<!-- Placeholder for IE -->
+<!--<script type="text/javascript"
+	src="lib/jquery-placeholder/2.1.1/jquery.placeholder.min.js"></script> -->
+
+<!-- Scheduling Component -->
+<link rel="stylesheet" href="css/font-awesome.css">
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/selectize.default.css" />
+<link rel="stylesheet" type="text/css" href="css/selectize.bootstrap3.css" />
+<link rel="stylesheet" type="text/css" href="css/preschedule.css">
+
+<!-- jQuery -->
+<script type="text/javascript" src="lib/jquery/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="lib/jquery/jquery-ui-1.11.3/jquery-ui.min.js"></script>
+<script type="text/javascript" src="lib/datatables/datatables.min.js"></script>
+	<script type="text/javascript" src="lib/jquery/jquery.dateFormat-1.0.js"></script>
+	<script type="text/javascript" src="lib/selectize.js"></script>
+
+<script type="text/javascript" src="js/utils.js?v=20150911"></script>
+	<script type="text/javascript"	src="lib/dialog/2.0/js/exam.utils.js?v=20150911"></script>
+	<script type="text/javascript"	src="lib/dialog/2.0/js/exam.dialog.js?v=20150911"></script>
+	<script type="text/javascript"	src="lib/dialog/2.0/js/exam.error.js?v=20150911"></script>
+
+
+
+	<script type="text/javascript">
+	/* Exam Workspace Init */
+	if (window.location.host.lastIndexOf("finra.org") != -1) {
+		document.domain = "finra.org";
+	}
+
+</script>
+	<script type="text/javascript" src="js/sched.js?v=20150911"></script>
+	<script type="text/javascript" src="js/sched.grid.js?v=20150911"></script>
+<script type="text/javascript" src="js/componentmapping.js?v=20170731"></script>
+
+</head>
+
+<body>
+	<div id="loading"></div>
+	<div id="debug"></div>
+
+	<div id="container" class="componentMapping" style="padding: 15px;background-color: #fff;">
+
+		<div id="filters" class="noselect">
+            <div class="filters">
+                <div class="searchFilters">
+                    <div>
+						<label style="position: relative;">
+							<i class="fa fa-search" aria-hidden="true" style="position: absolute; font-size: 13px; top: 4px; left: 6px; color: rgb(170, 170, 170);"></i>
+							<input type="text" class="searchFld" placeholder="Search" style="padding-left: 23px;"/>
+						</label>
+
+                    </div>
+                    <div>
+                        <div class="subTypeDropdown"><select id="subTypeFilter"></select>
+                        </div>
+                    </div>
+                </div>
+				<a class="clearFilters" href="#" onclick="componentmapping.resetFilters();" title="Clear filters">
+					Clear
+				</a>
+            </div>
+
+		</div>
+
+		<div class="componentMappingGrid">
+			<div id="grid">
+				<table id="componentMappingTable" class="display" width="100%" cellspacing="0">
+
+				</table>
+			</div>
+			<div id="footer">
+				<div class="actions">
+					<button class="btn btn-primary" onclick="componentmapping.save();">
+						Save
+					</button>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</body>

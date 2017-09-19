@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2012 Financial Industry Regulatory Authority.
+  ~ All Rights Reserved.
+  -->
+
+<project name="exam" default="check-for-run-ods-param" basedir="." >
+
+  <!-- Importing environment variables -->
+  <property environment="env"/>
+
+  <!--Conditional check for run-ods-build param -->
+  <condition property="run_ods_build" value="true">
+    <istrue value="${RUN_ODS_BUILD}"/>
+  </condition>
+
+    <target name="check-for-run-ods-param" description="Create run-ods.txt file if run_ods_build param is set." if="run_ods_build">
+      <touch file="${env.WORKSPACE}/run_ods_build.txt"/>
+  </target>
+
+
+</project>

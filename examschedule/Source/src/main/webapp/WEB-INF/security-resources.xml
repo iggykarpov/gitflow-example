@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
+
+    
+    <!-- move this later -->
+	<bean id="esched.userManager"
+        class="org.finra.exam.common.security.service.impl.UserManagerImpl"/>
+        
+    <bean id="esched.currentRequestProvider"
+        class="org.finra.exam.common.security.util.CurrentHttpRequestProvider"/>
+        
+    <bean id="esched.issoUserRetriever"
+        class="org.finra.exam.common.security.util.IssoUserRetriever">
+    	<constructor-arg index="0" ref="esched.currentRequestProvider"/>
+  	</bean>
+  	<bean id="esched.mockUserRetriever"
+        class="org.finra.exam.common.security.util.MockUserRetriever">
+    	<constructor-arg index="0" ref="test.mockUser"/>
+  	</bean>
+    <!--  filter bean  -->
+    
+    <bean id="esched.postSSOAuthFilter"
+        class="org.finra.exam.common.security.filter.PostSSOAuthFilter">
+    	<!-- <constructor-arg index="0" ref="esched.issoUserRetriever"/> -->
+    	<constructor-arg index="0" ref="esched.mockUserRetriever"/> 
+    	<constructor-arg index="1" ref="esched.userManager"/> 
+  	</bean>
+  	<bean id="esched.userIdFilter" class="org.finra.exam.common.security.filter.UserIdFilter">
+    
+  	</bean>
+  	
+  	  	<bean id="test.mockUser" class="org.finra.exam.common.security.domain.User">
+    	<constructor-arg index="0"  value="DIZHURR"/>
+    	<property name="roles">
+    		<set>
+    			<bean class="org.finra.exam.common.security.domain.Role">
+					<property name="id" value="1" />
+    			    <property name="name" value="QRA_RPR_EDITOR" />
+    			</bean>
+    			<bean class="org.finra.exam.common.security.domain.Role">
+    				<property name="id" value="2" />
+					<property name="name" value="ROLE_LOCAL" />
+    			</bean>
+    		</set>
+    	</property>
+  	</bean>
+  
+</beans>

@@ -1,0 +1,214 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>ExamPlanningLib</artifactId>
+		<groupId>org.finra.examplanning.lib</groupId>
+		<version>2017.5</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.finra.examschedule.esched</groupId>
+	<artifactId>ExamSchedule</artifactId>
+	<version>2017.5</version>
+	<packaging>war</packaging>
+	<build>
+		<finalName>esched</finalName>
+		<defaultGoal>test</defaultGoal>
+		<!-- plugins -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+			<testResource>
+				<directory>src/main/webapp</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</testResource>
+		</testResources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<fork>true</fork>
+					<compilerArgument>-XDignore.symbol.file</compilerArgument>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>com.atlassian.maven.plugins</groupId> <artifactId>maven-clover2-plugin</artifactId> 
+				<version>${clover.version}</version> <configuration> <generateXml>true</generateXml> 
+				<generateHtml>true</generateHtml> <license>${maven.clover.license}</license> 
+				</configuration> </plugin> -->
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>cm-profile</id>
+			<build>
+				<finalName>esched</finalName>
+				<defaultGoal>test</defaultGoal>
+				<!-- plugins -->
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>log4j.xml</exclude>
+							<exclude>applicationContext-resources.xml</exclude>
+							<exclude>config.properties</exclude>
+						</excludes>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>src/test/resources</directory>
+						<filtering>true</filtering>
+					</testResource>
+					<testResource>
+						<directory>src/main/webapp</directory>
+						<filtering>true</filtering>
+						<includes>
+							<include>**/*.xml</include>
+						</includes>
+					</testResource>
+				</testResources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>war-builder</id>
+								<phase>package</phase>
+								<configuration>
+									<descriptors>
+										<descriptor>${project.basedir}/src/main/assembly/dev.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/qc.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/qc2.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/qcpm.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/qcpm2.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/int.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/prod.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/prod2.xml</descriptor>
+										<descriptor>${project.basedir}/src/main/assembly/train.xml</descriptor>
+									</descriptors>
+								</configuration>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.3</version>
+						<configuration>
+							<packagingExcludes>
+								WEB-INF/security-resources.xml,
+								js/**/*,
+								css/**/*, images/**/*,lib/**/*, *.html
+							</packagingExcludes>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.3.1</version>
+						<configuration>
+							<source>1.7</source>
+							<target>1.7</target>
+							<fork>true</fork>
+							<compilerArgument>-XDignore.symbol.file</compilerArgument>
+						</configuration>
+					</plugin>
+					<!-- <plugin> <groupId>com.atlassian.maven.plugins</groupId> <artifactId>maven-clover2-plugin</artifactId>
+                        <version>${clover.version}</version> <configuration> <generateXml>true</generateXml>
+                        <generateHtml>true</generateHtml> <license>${maven.clover.license}</license>
+                        </configuration> </plugin> -->
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.finra.examplanning.common</groupId>
+			<artifactId>ExamPlanningCommon</artifactId>
+			<version>2017.5</version>
+		</dependency>
+        <dependency>
+            <groupId>org.finra.examplanning.star</groupId>
+            <artifactId>ExamStarClient</artifactId>
+            <version>2017.5</version>
+        </dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-jaxrs</artifactId>
+			<version>1.5.10</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>1.5.10</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
+		<jdbc.driverClassName>oracle.jdbc.OracleDriver</jdbc.driverClassName>
+        <!--DEV - ACTIVE NOW-->
+
+                    <jdbc.url>jdbc:oracle:thin:@kwalxorcld004.devlab.dev:1521:EXAMD</jdbc.url>
+                    <jdbc.username>EXAMSCHDL</jdbc.username>
+                    <jdbc.password>Summer12</jdbc.password>
+
+            <!--INT-->
+		<!--
+		<jdbc.url>jdbc:oracle:thin:@kwalxorcld100.devlab.dev:1521:EXAMI</jdbc.url>
+		<jdbc.username>EXAMSCHDL</jdbc.username>
+		<jdbc.password>Summer12</jdbc.password>
+		-->
+
+		<!--B1D-->
+		<!--
+                <jdbc.url>jdbc:oracle:thin:@kwalxorcld004.devlab.dev:1521:EXAMB1D</jdbc.url>
+                <jdbc.username>EXAMSCHDL</jdbc.username>
+                <jdbc.password>Summer12</jdbc.password>
+        -->
+
+		<!--INT-->
+		<!--
+		<jdbc.url>jdbc:oracle:thin:@kwalxorclq03b.qa.finra.org:1521:EXAMQ</jdbc.url>
+		<jdbc.username>EXAMSCHDL</jdbc.username>
+		<jdbc.password>Summer12</jdbc.password>
+		-->
+
+		<!--QC-->
+		<!--
+                <jdbc.url>jdbc:oracle:thin:@kwalxorclq03b.qa.finra.org:1521:EXAMQ</jdbc.url>
+                <jdbc.username>EXAMSCHDLAPP</jdbc.username>
+                <jdbc.password>Krypt0n$</jdbc.password>
+                -->
+
+        </properties>
+        </project>

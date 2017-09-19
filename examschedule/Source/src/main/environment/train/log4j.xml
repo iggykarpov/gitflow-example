@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender"> 
+		<layout class="org.apache.log4j.PatternLayout"> <param name="ConversionPattern" 
+		value="%p [%t] %c{1}.%M(%L) | %m%n"/> </layout> </appender> -->
+
+	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/app/proj/logs/Exam-Planning-Train/ESCHED_logger.log" />
+		<param name="MaxFileSize" value="5MB" />
+		<param name="MaxBackupIndex" value="20" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d{dd MMM yyyy HH:mm:ss,SSS} %p [%t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="ASYNC" class="org.apache.log4j.AsyncAppender">
+		<param name="BufferSize" value="512" />
+		<param name="LocationWARN" value="true" />
+		<!-- <appender-ref ref="CONSOLE"/> -->
+		<appender-ref ref="FILE" />
+	</appender>
+
+	<logger name="org.finra">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="org.hibernate.SQL">
+		<level value="ALL" />
+	</logger>
+
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="ASYNC" />
+	</root>
+
+</log4j:configuration>

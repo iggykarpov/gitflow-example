@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+
+            http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+	<!-- <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/> -->
+	<bean id="matterServiceClient" class="org.finra.esched.service.star.common.MatterServiceClient">
+        <property name="wsdlLocation" value="${portAddress}"/>
+    </bean>
+
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+    <bean id="apiListingResource" class="io.swagger.jaxrs.listing.ApiListingResource"/>
+    <bean id="swaggerSerializers" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/>
+
+    <jaxrs:server address="/">
+        <jaxrs:features>
+            <cxf:logging/>
+        </jaxrs:features>
+        <jaxrs:serviceBeans>
+            <ref bean="psExamWebService" />
+            <ref bean="apiListingResource" />
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider"/>
+            <ref bean="swaggerSerializers" />
+        </jaxrs:providers>
+
+        <jaxrs:extensionMappings>
+            <entry key="xml" value="application/xml"/>
+        </jaxrs:extensionMappings>
+    </jaxrs:server>
+
+    <bean id="beanConfig" class="io.swagger.jaxrs.config.BeanConfig">
+        <property name="title" value="Exam Schedule"/>
+        <property name="version" value="1.0.0" />
+        <property name="schemes" value="http" />
+        <property name="basePath" value="esched/services"/>
+        <property name="resourcePackage" value="org.finra.esched.service.rest.impl, io.swagger.resources"/>
+        <property name="scan" value="true"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,279 @@
+<!doctype html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Exam Prescheduling</title>
+
+
+<link rel="stylesheet" type="text/css"	href="lib/jquery/jquery-ui-1.11.3/jquery-ui.css" />
+<link rel="stylesheet" type="text/css"	href="lib/dialog/2.0/css/exam.css">
+
+<!-- Placeholder for IE -->
+<!--<script type="text/javascript"
+	src="lib/jquery-placeholder/2.1.1/jquery.placeholder.min.js"></script> -->
+
+<!-- Scheduling Component -->
+<link rel="stylesheet" href="css/font-awesome.css">
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/selectize.default.css" />
+<link rel="stylesheet" type="text/css" href="css/selectize.bootstrap3.css" />
+<link rel="stylesheet" type="text/css" href="css/preschedule.css">
+
+<!-- jQuery -->
+<script type="text/javascript" src="lib/jquery/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="lib/jquery/jquery-ui-1.11.3/jquery-ui.min.js"></script>
+<script type="text/javascript" src="lib/jquery/tiny-pubsub.min.js"></script>
+<script type="text/javascript" src="lib/selectize.js"></script>
+
+<script type="text/javascript" src="js/utils.js?v=20150911"></script>
+<script type="text/javascript"	src="lib/dialog/2.0/js/exam.utils.js?v=20150911"></script>
+<script type="text/javascript"	src="lib/dialog/2.0/js/exam.dialog.js?v=20150911"></script>
+<script type="text/javascript"	src="lib/dialog/2.0/js/exam.error.js?v=20150911"></script>
+
+
+<script type="text/javascript">
+	/* Exam Workspace Init */
+	if (window.location.host.lastIndexOf("finra.org") != -1) {
+		document.domain = "finra.org";
+	}
+</script>
+
+<script type="text/javascript" src="js/sched.js?v=20150911"></script>
+<script type="text/javascript" src="js/sched.grid.js?v=20150911"></script>
+<script type="text/javascript" src="js/preschedule.js?v=20150911"></script>
+<script type="text/javascript" src="js/exam.ga.js?v=20170720"></script>
+
+</head>
+
+<body>
+	<div id="loading"></div>
+	<div id="debug"></div>
+
+	<div id="container">
+		<!-- <div id="loading"></div> -->
+		<!-- div class="tabHighlight">&#9650;</div>-->
+		<div id="filters" class="noselect">
+            <div class="filters clearfix">
+                <div style="float: left; border-right: 1px solid #ddd;">
+                    <div class="searchFilters clearfix">
+                        <div>
+                        <input id="crdFilter" type="text" class="searchFld"
+                            placeholder="CRD, Firm or Supervisor names..."
+                            onkeyup="PS.View.filterUpdated(this.id, this.value);" />
+                        </div>
+                        <div>
+                            <div class="distrDropdown"><select id="distrFilter" style="min-width: 170px;"
+                                onchange="PS.View.filterUpdated(this.id, this.value);"><option
+                                    value="" disabled selected>Any District</option></select>
+                            </div>
+                            <div class="statusDropdown"><select id="statusFilter"
+                                onchange="PS.View.filterUpdated(this.id, this.value);"><option
+                                    value="" disabled selected>Any Status</option></select>
+                            </div>
+                            <!--div class="impctDropdown"><select id="impctFilter"
+                                                               onchange="PS.View.filterUpdated(this.id, this.value);"><option
+                                    value="" disabled selected>Any Impact</option></select>
+                            </div>
+                            <div class="riskDropdown"><select id="riskFilter"
+                                                              onchange="PS.View.filterUpdated(this.id, this.value);"><option
+                                    value="" disabled selected>Any Likelihood</option></select>
+                            </div-->
+
+                        </div>
+                    </div>
+                    <div>
+
+                        <div class="componentFilters">
+                            <div>
+                                <span class="checkbox">
+                                    <label >
+                                        <input id="spFilter" type="checkbox" /><span class="icon"></span>SP
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="muniFilter" type="checkbox" /><span class="icon"></span>MUNI
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="muniAdvFilter" type="checkbox" /><span class="icon"></span>MUNI ADV
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="opFilter" type="checkbox" /><span class="icon"></span>OPTIONS
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="rsaSpFilter" type="checkbox" /><span class="icon"></span>RSA-SP
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="sdfFilter" type="checkbox"/><span class="icon"></span>SDF
+                                    </label>
+                                </span>
+                            </div>
+                            <div>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="ffnFilter" type="checkbox" /><span class="icon"></span>FIRST FN
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="fnFilter" type="checkbox" /><span class="icon"></span>FN
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="rsaFnFilter" type="checkbox" /><span class="icon"></span>RSA-FN
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="ancFilter" type="checkbox" /><span class="icon"></span>ANC
+                                    </label>
+                                </span>
+                                <span class="checkbox">
+                                    <label>
+                                        <input id="flFilter" type="checkbox" /><span class="icon"></span>FLOOR
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="userOverrideFilters">
+                    <div id="overrddn">
+                            <span class="checkbox">
+                                <label class="overridden">
+                                    <input id="ovrrdFilter" type="checkbox" onclick="PS.View.filterUpdated(this.id, this.checked);" /><span class="icon"></span>Manually Changed
+                                </label>
+                            </span>
+                    </div>
+                    <div>
+                            <span class="checkbox">
+                                <label >
+                                    <input id="hasRqFilter" type="checkbox" onclick="PS.View.filterUpdated(this.id, this.checked);" /><span class="icon"></span>Required Component(s)
+                                </label>
+                            </span>
+                    </div>
+
+                    <!-- <div id="overrddn" style="float:left; margin-right: 10px; margin-top: 2px; line-height: 22px;">
+                        <label style="text-decoration: underline;"><input id="ovrrdFilter" type="checkbox"
+                            onchange="PS.View.filterUpdated(this.id, this.checked);">CHANGED</label>
+                    </div>
+                    <div id="nma" style="float:right; line-height: 22px; padding-right: 4px; border: 2px solid #ff9900; -moz-border-radius: 3px;  -webkit-border-radius: 3px;  border-radius: 3px;">
+                        <label><input id="hasNmaFilter" type="checkbox"
+                            onchange="PS.View.filterUpdated(this.id, this.checked);">NMA/RsaNMA</label>
+                    </div>
+                    <div style="clear:both; line-height: 22px;">
+                        <label><input id="hasRqFilter" type="checkbox"
+                            onchange="PS.View.filterUpdated(this.id, this.checked);" />Has
+                            Required Component(s)</label>
+                    </div> -->
+
+                </div>
+            </div>
+
+            <div id="resetFilters">
+                <a class="reset" href="#" onclick="PS.View.resetFilters();">
+                    Reset
+                </a>
+            </div>
+
+			<div class="actions">
+
+
+				<div id="schedule">
+					<button class="btn btn-primary" onclick="PS.View.schedule();">
+						Schedule
+					</button>
+				</div>
+				<div id="export" >
+					<button class="btn btn-primary">
+						<i class="fa fa-file-excel-o"></i>Export
+					</button>
+				</div>
+			</div>
+		</div>
+		
+		<div id="prescheduler" class="no_results"
+			style="width: 100%, height:100% opacity: 1;">
+			<div id="grid">
+				<!-- <table style="table-layout: fixed; width: 100%;" cellspacing="0"
+				cellpadding="0">
+				<tr class="table_row">
+					<td class="slct"><input type="checkbox" /></td>
+					<td class="crd">25</td>
+					<td class="fname">ALLEN & COMPANY OF FLORIDA, INC.</td>
+					<td class="sp">
+						<table cellspacing="0" cellpadding="0" style="width: 100%;"
+							class="sp_details">
+							<tr>
+								<td rowspan="2" class="risk">1A</td>
+								<td><label><input type="checkbox" />-SP</label></td>
+								<td><label><input type="checkbox" />-MUNI</label></td>
+								<td><label><input type="checkbox" />-OPTIONS</label></td>
+							</tr>
+							<tr>
+								<td>11/11/2015</td>
+								<td>11/11/2015</td>
+								<td>11/11/2015</td>
+							</tr>
+							<tr>
+								<td colspan="4" class="district">District</td>
+							</tr>
+						</table>
+					</td>
+					<td class="fn">
+						<table cellspacing="0" cellpadding="0" style="width: 100%;"
+							class="sp_details">
+							<tr>
+								<td rowspan="2" class="risk">1A</td>
+								<td><label><input type="checkbox" />-First FN</label></td>
+								<td><label><input type="checkbox" />-FN</label></td>
+								<td><label><input type="checkbox" />-FLOOR</label></td>
+								<td>ANC</td>
+							</tr>
+							<tr>
+								<td>11/11/2015</td>
+								<td>11/11/2015</td>
+								<td>11/11/2015</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="5" class="district">District</td>
+							</tr>
+						</table>
+
+					</td>
+					<td class="auditMonth">MAY</td>
+					<td class="fwsd">&nbsp;</td>
+					<td class="hrs">&nbsp;</td>
+					<td class="status">&nbsp;</td>
+				</tr>
+			</table> -->
+			</div>
+		</div>
+	
+		
+		<div id="pagination">
+			<ul class="pagination">
+		 		<li><a href="#" id="prev" title="Previous"><span>«</span></a></li>
+		 		<li><span id="total">0 - 0 of 0</span></li>
+		 		<li><a href="#" id="next" title="Next"><span aria-hidden="true">»</span></a></li>
+		 		</ul>
+		 		
+		 </div>
+		
+		
+		
+	</div>
+	<div class="overlay annualPlanningOverlay" id="annualOverlay"></div>
+</body>

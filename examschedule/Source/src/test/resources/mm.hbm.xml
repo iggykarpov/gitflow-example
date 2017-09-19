@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<!--
+  - Mapping file for the Hibernate implementation
+ -->
+ 
+ 
+<hibernate-mapping auto-import="true" default-lazy="false">
+
+   <!--  <sql-query name="getMlstnEventList">
+    <![CDATA[
+    	select 
+		a.ID, a.CNTXT_KEY,b.id as EVENT_TYPE_ID
+    	,case when last_nm is not null then last_nm || ', ' || first_nm else a.EVENT_USER_ID end as EVENT_USER_NM
+    	, a.EVENT_USER_ID,a.EVENT_DATE,a.CRTD_BY_NM,a.CRTD_BY_ID,a.CRTD_ON,a.NOTES,
+		b.CNTXT_TYPE,LABEL,SEQ,IS_VSBL,CAN_BE_MDFD,CAN_BE_DLTD,CAN_BE_DPLT,IS_STAR_SYNC,STAR_SYNC_FIELD,
+		STAR_DATE_NAME_ID,STAR_DATE_TYPE_ID, EVENT_DS, MLSTN_ID, to_number(STAR_DATE_TYPE_ID) DATE_TYPE_ID, to_char(MLSTN_TYPE_ID) MLSTN_TYPE_ID
+		from (select * from mlstn_event cc, aplcn_user ccc where upper(cc.event_user_id)  = upper(ccc.user_nm (+))) a
+    	, (select * from mlstn_event_type b, mlstn_vw c where b.id = c.event_id) b
+		where a.EVENT_TYPE_ID (+) = b.id and a.cntxt_key (+) = :cntxtKey order by seq
+     ]]>  
+   </sql-query>     
+   
+   <sql-query name="getBranchMlstnEventList">
+    <![CDATA[
+    	select 
+		a.ID, a.CNTXT_KEY,b.id as EVENT_TYPE_ID
+    	,case when last_nm is not null then last_nm || ', ' || first_nm else a.EVENT_USER_ID end as EVENT_USER_NM
+    	, a.EVENT_USER_ID,a.EVENT_DATE,a.CRTD_BY_NM,a.CRTD_BY_ID,a.CRTD_ON,a.NOTES,
+		b.CNTXT_TYPE,LABEL,SEQ,IS_VSBL,CAN_BE_MDFD,CAN_BE_DLTD,CAN_BE_DPLT,IS_STAR_SYNC,STAR_SYNC_FIELD,
+		STAR_DATE_NAME_ID,STAR_DATE_TYPE_ID, EVENT_DS, MLSTN_ID, to_number(STAR_DATE_TYPE_ID) DATE_TYPE_ID
+		from (select * from mlstn_event cc, aplcn_user ccc where upper(cc.event_user_id)  = upper(ccc.user_nm (+))) a
+    	, (select * from mlstn_event_type b, mlstn_vw c where b.id = c.event_id) b
+		where a.EVENT_TYPE_ID = b.id and substr(a.cntxt_key,1,11) = :cntxtKey and  length(a.cntxt_key) > 11 order by seq
+     ]]>  
+   </sql-query>    -->
+
+<!--     <sql-query name="getBranchExamList">
+    <![CDATA[
+    	select scope_lctn_id, 
+		b.exam_scope_id, 
+		b.actv_fl, 
+		b.lctn_nm, 
+		b.brnch_crd_nb, 
+		strt1_nm || ' ' || nvl(strt2_nm,'') || ' '|| city_nm || ', ' || state_cd as addr_tx, 
+		city_nm || ', ' || state_cd as city_state_nm
+		from scope_lctn b, brnch a, exam_scope c
+		where c.exam_id = :examId 
+		and b.exam_scope_id = c.exam_scope_id
+		and a.brnch_crd_nb = b.brnch_crd_nb 
+		and b.actv_fl = 'Y'
+		and a.main_ofc_fl = 'N'
+     ]]>  
+   </sql-query>   -->
+   
+   <sql-query name="getLastUpdate">
+    <![CDATA[
+    SELECT MAX(LAST_UPDATE) AS LAST_UPDATE
+      FROM (SELECT MAX(CRTD_ON) AS LAST_UPDATE
+              FROM MLSTN_EVENT
+             WHERE SUBSTR(CNTXT_KEY, 1, 11) = :cntxtKey
+               AND LENGTH(CNTXT_KEY) = 11
+            UNION ALL
+            SELECT MAX(CRTD_ON) AS LAST_UPDATE
+              FROM MLSTN_EVENT
+             INNER JOIN EXAM_VW
+                ON SUBSTR(CNTXT_KEY, 1, 11) = MTTR_ID
+             INNER JOIN SCOPE_CRD_RISK_UNIT_VW
+                ON EXAM_VW.EXAM_ID = SCOPE_CRD_RISK_UNIT_VW.EXAM_ID
+             WHERE CNTXT_KEY = :cntxtKey || SCOPE_CRD_RISK_UNIT_VW.CRD_NB
+               AND SCOPE_CRD_RISK_UNIT_VW.SCOPE_RISK_ACTV_ST = 'ACTIVE'
+               AND SCOPE_CRD_RISK_UNIT_VW.PRMRY_FL = 'N') S 
+     ]]>  
+   </sql-query>    
+
+<!--    <sql-query name="getStarDispositionErrorCount">
+    <![CDATA[
+		select dpstn_fndg_type_ct as undisposed_count,
+		rcnln_bln_nb as unreconciled_count
+		from CLOSE_SMMRY_VW
+		where exam_id = :examId
+     ]]>  
+   </sql-query> -->
+
+   <sql-query name="getExamReportPackage">
+	    <![CDATA[   
+WITH brpt_sf_exam_type_lk_local1 AS
+     (SELECT brpt_sf_exam_type_id, sf_cd, exam_type_cd, exam_sub_type_cd, actv_fl        FROM brpt_sf_exam_type_lk
+      UNION ALL --This query generates a dynamic list of Exam Type and Sub type based on district
+      SELECT DISTINCT 1 BRPT_SF_EXAM_TYPE_ID,  CASE   WHEN MTTR_CTGRY_DS = 'CAUSE' THEN  NULL   ELSE  'MK'  END SF_CD, MTTR_TYPE_CD, MTTR_SUB_TYPE_CD, 'Y' ACTV_FL  FROM EXAM_VW EV
+      INNER JOIN EXAM_DMN ED ON EV.MTTR_ID = ED.XTRNL_ID
+       WHERE dstrt_cd IN ('EX', 'TE')   AND ED.EXAM_ID =:examId and ED.DMN_ID= :domainId
+      UNION ALL
+      SELECT DISTINCT 2 BRPT_SF_EXAM_TYPE_ID, CASE WHEN MTTR_CTGRY_DS = 'CAUSE' THEN 'TF' ELSE NULL END SF_CD,
+                      MTTR_TYPE_CD, MTTR_SUB_TYPE_CD, 'Y' ACTV_FL        FROM EXAM_VW EV1 INNER JOIN EXAM_DMN ED1 ON EV1.MTTR_ID = ED1.XTRNL_ID
+       WHERE DSTRT_CD IN ('TF')  AND ED1.EXAM_ID =:examId and ED1.DMN_ID= :domainId AND (MTTR_TYPE_CD <> 'FinopSpecial' OR (MTTR_SUB_TYPE_CD IS NULL) OR
+             MTTR_SUB_TYPE_CD NOT IN ('178', '104', '01', '74', '73', '71','75','72','70','02','82','76','81','78','80','79','77')))
+           
+             ,    
+             pkg_sbscb_1 AS
+     (SELECT DISTINCT BPA.AGRMT_CD, BPA.PKG_CD, BASSCG.SBSCB_CD
+        FROM exam_vw me INNER JOIN EXAM_DMN ED2 ON me.MTTR_ID = ED2.XTRNL_ID
+        JOIN exam_grp_lk gd
+          ON me.dstrt_cd = gd.owner_dstrt_city_nb
+        JOIN mttr_type_lk etl
+          ON (me.mttr_type_cd = etl.mttr_type_cd)
+        LEFT JOIN brpt_sf_exam_type_lk_local1 bsetl
+          ON (me.mttr_type_cd = bsetl.exam_type_cd AND
+             nvl(me.mttr_sub_type_cd, 'NULL') =
+             nvl(bsetl.exam_sub_type_cd, 'NULL') AND bsetl.actv_fl = 'Y')
+       JOIN brptagrmtsbscbsfctgrygrp_vw basscg
+          ON basscg.exam_grp_cd = gd.exam_grp_cd
+         AND basscg.exam_ctgry_id = etl.mttr_ctgry_id
+         AND nvl(basscg.sf_cd, 'NULL') = nvl(bsetl.sf_cd, 'NULL')
+        JOIN brpt_pkg_agrmt bpa
+          ON (BASSCG.AGRMT_CD = BPA.AGRMT_CD AND BPA.ACTV_FL = 'Y')
+       WHERE 
+         ED2.EXAM_ID =:examId and ED2.DMN_ID= :domainId
+         AND BASSCG.SBSCB_CD IN (SELECT 'SEC'
+                FROM DSTRT_LOC_LK D 
+               WHERE 
+               d.owner_dstrt_city_nb = me.dstrt_cd
+              UNION
+              SELECT TRIM(upper(xchng_cd))
+                FROM firm_xchng b, xchng_lk c
+               WHERE me.firm_crd_nb = b.firm_id
+                 AND b.xchng_id = c.xchng_id
+              UNION
+              SELECT TRIM(upper(ftrs_xchng_lk.ftrs_xchng_cd))
+                FROM firm_ftrs_xchng, ftrs_xchng_lk
+               WHERE firm_ftrs_xchng.ftrs_xchng_id =
+                     ftrs_xchng_lk.ftrs_xchng_id
+                 AND firm_ftrs_xchng.firm_id = me.firm_crd_nb)
+         AND ((etl.mttr_ctgry_id = 2 AND bsetl.sf_cd IS NULL) OR
+             (ETL.MTTR_CTGRY_ID = 1 AND BSETL.SF_CD IS NOT NULL)))
+            
+             ,
+    BRPT_SF_EXAM_TYPE_LK_LOCAL2 AS
+     (SELECT brpt_sf_exam_type_id, sf_cd, exam_type_cd, exam_sub_type_cd, actv_fl   FROM brpt_sf_exam_type_lk   WHERE 1 = 2
+      UNION ALL --This query generates a dynamic list of Exam Type and Sub type based on district
+      SELECT DISTINCT 1 BRPT_SF_EXAM_TYPE_ID, CASE WHEN MTTR_CTGRY_DS = 'CAUSE' THEN NULL ELSE 'TF' END SF_CD, MTTR_TYPE_CD, MTTR_SUB_TYPE_CD, 'Y' ACTV_FL
+        FROM EXAM_VW EV INNER JOIN EXAM_DMN ED   ON EV.MTTR_ID = ED.XTRNL_ID  WHERE DSTRT_CD = 'TF'  and 
+     
+        ED.EXAM_ID =:examId AND ED.DMN_ID= :domainId)
+    
+        ,
+    pkg_sbscb_2 AS
+     (SELECT DISTINCT BPA.AGRMT_CD, BPA.PKG_CD, BASSCG.SBSCB_CD FROM EXAM_VW ME
+         INNER JOIN EXAM_DMN ED3   ON me.MTTR_ID = ED3.XTRNL_ID
+        JOIN exam_grp_lk gd
+          ON me.dstrt_cd = gd.owner_dstrt_city_nb
+        JOIN mttr_type_lk etl
+          ON (me.mttr_type_cd = etl.mttr_type_cd)
+        LEFT JOIN brpt_sf_exam_type_lk_local2 bsetl
+          ON (me.mttr_type_cd = bsetl.exam_type_cd AND
+             nvl(me.mttr_sub_type_cd, 'NULL') =
+             nvl(bsetl.exam_sub_type_cd, 'NULL') AND bsetl.actv_fl = 'Y')
+        JOIN brptagrmtsbscbsfctgrygrp_vw basscg
+          ON basscg.exam_grp_cd = gd.exam_grp_cd
+         AND basscg.exam_ctgry_id = etl.mttr_ctgry_id
+         AND nvl(basscg.sf_cd, 'NULL') = nvl(bsetl.sf_cd, 'NULL')
+         AND basscg.agrmt_cd = 'SEC'
+        JOIN brpt_pkg_agrmt bpa
+          ON (BASSCG.AGRMT_CD = BPA.AGRMT_CD AND BPA.ACTV_FL = 'Y')
+       WHERE 
+         ed3.EXAM_ID =:examId and ed3.DMN_ID= :domainId
+         AND basscg.sbscb_cd IN
+             (SELECT 'SEC'
+                FROM DSTRT_LOC_LK D 
+               WHERE 
+               d.owner_dstrt_city_nb = me.dstrt_cd
+              UNION
+              SELECT TRIM(upper(xchng_cd))
+                FROM firm_xchng b, xchng_lk c
+               WHERE me.firm_crd_nb = b.firm_id
+                 AND b.xchng_id = c.xchng_id
+              UNION
+              SELECT TRIM(upper(ftrs_xchng_lk.ftrs_xchng_cd))
+                FROM firm_ftrs_xchng, ftrs_xchng_lk
+               WHERE firm_ftrs_xchng.ftrs_xchng_id =
+                     ftrs_xchng_lk.ftrs_xchng_id
+                 AND firm_ftrs_xchng.firm_id = me.firm_crd_nb)
+         AND ((ETL.MTTR_CTGRY_ID = 2 AND BSETL.SF_CD IS NULL) OR
+             (ETL.MTTR_CTGRY_ID = 1 AND BSETL.SF_CD IS NOT NULL)))
+           
+             ,
+    pkg_sbscb_3 AS
+     (SELECT DISTINCT pkg_cd, sbscb_cd
+        FROM pkg_sbscb_1
+      UNION
+      SELECT DISTINCT pkg_cd, sbscb_cd
+        FROM pkg_sbscb_2),
+    reports AS
+     (SELECT CASE
+               WHEN pkg_cd = 'A' THEN
+                'SEC'
+               ELSE
+                'RSA/IFSG'
+             END pkg_cd,
+             cntnt_desc_tx rpt_nm,
+             file_type_cd,
+             exam_fldr_nm
+        FROM brpt_cntnt_lk a, brpt_pkg_cntnt b
+       WHERE a.cntnt_cd = b.cntnt_cd
+         AND exam_fldr_nm IS NOT NULL
+         AND a.actv_fl = 'Y'
+         AND B.ACTV_FL = 'Y'
+         AND PKG_CD IN (SELECT PKG_CD FROM PKG_SBSCB_3))
+     
+         ,
+    package1 AS
+     (SELECT DISTINCT pkg_cd, rpt_nm, dcmnt_file_nm, file_ct
+        FROM (SELECT pkg_cd, rpt_nm, dcmnt_file_nm, 0 file_ct
+                FROM reports r
+               INNER JOIN exam_dcmnt_rpt_vw edrw
+                  ON UPPER(EDRW.XTRNL_TYPE_TX) = UPPER(R.FILE_TYPE_CD)
+               INNER JOIN exam_vw ew 
+                  ON EDRW.EXAM_ID = EW.EXAM_ID
+               WHERE ew.exam_id = :examId
+              UNION ALL
+              SELECT pkg_cd, rpt_nm, '', COUNT(*) file_ct
+                FROM reports r
+               INNER JOIN exam_dcmnt_rpt_vw edrw
+                  ON upper(edrw.exam_fldr_nm) = upper(r.exam_fldr_nm)
+               INNER JOIN exam_vw ew
+                  ON EDRW.EXAM_ID = EW.EXAM_ID
+               WHERE ew.exam_id=:examId
+                 AND edrw.exam_fldr_nm = 'Firm Response Documents'
+               GROUP BY pkg_cd, rpt_nm) s
+       ORDER BY pkg_cd, rpt_nm),
+    package2 AS
+     (SELECT rpt_nm,
+             dcmnt_file_nm,
+             file_ct,
+             listagg(pkg_cd, ';') within GROUP(ORDER BY pkg_cd DESC) pkg_cd
+        FROM package1
+       GROUP BY rpt_nm, dcmnt_file_nm, file_ct)
+    SELECT rownum id,
+           rpt_nm,
+           dcmnt_file_nm,
+           CASE
+             WHEN file_ct = 0 THEN
+              NULL
+             ELSE
+              to_char(file_ct) || ' file(s)'
+           END file_ct,
+           pkg_cd
+      FROM PACKAGE2
+
+
+
+ 	     ]]>  
+   </sql-query>    
+   
+<!--    <sql-query name="getScopeCrd">
+	    <![CDATA[   
+			select distinct EXAM_ID,CRD_TYPE_NM,CRD_NB,CRD_NM,PRMRY_FL 
+			from scope_crd_risk_unit_vw 
+			where exam_id = :examId 
+			and SCOPE_CRD_RISK_ID is not null
+			and PRMRY_FL = 'N'
+			order by CRD_TYPE_NM, CRD_NM
+		   ]]>  
+   </sql-query>          -->
+   
+</hibernate-mapping>
+

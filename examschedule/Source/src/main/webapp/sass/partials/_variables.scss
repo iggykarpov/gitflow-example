@@ -1,0 +1,61 @@
+$unit: 1px;
+$font-unit: 1px;
+
+// Colors
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+
+
+// Base colors
+$base-color: #000;
+$brand-color: #002137;
+$brand-light-color: lighten($brand-color, 2%);
+$brand-lighter-color: lighten($brand-color, 5%);
+$success-color: #468847;
+$error-color: #d50000;
+$primary-color: #337ab7;
+$primary-light-color: lighten($primary-color, 30%);
+$accent-color: darken($primary-color, 15%);
+
+// font family
+$font-family:  Roboto, Arial, sans-serif !default;
+$font-family-italic:  Roboto-Italic, Arial, sans-serif !default;
+$font-family-medium:  Roboto-Medium, Arial, sans-serif !default;
+$font-family-bold:  Roboto-Bold, Arial, sans-serif !default;
+
+// font size
+$font-size: 12*$font-unit;
+
+// font color
+$font-color: $gray-darker; //#222
+$font-light-color: $gray-light; //#767676
+$placeholder-color: lighten($gray-base, 40%); //#666
+$placeholder-light-color: lighten($gray-base, 67%); //#aaa
+$font-color-success: $success-color;
+$font-color-error: $error-color;
+$label-color: $gray-dark; //#333
+$label-light-color: lighten($gray-base, 67%); // #aaa
+
+
+// background color
+$background-color: #f2f2f2;
+$background-color-success: #dff0d8;
+$background-color-error: #f2dede;
+
+
+// border color
+$border-color: #ccc;
+$border-color-error: #a94442;
+$table-border-color: #ddd;
+
+
+// Header
+$header-font-color: $font-light-color;
+
+// Footer
+$footer-background-color: rgba($base-color, 0.02);
+$footer-border-color: $primary-color;

@@ -1,0 +1,596 @@
+@import 'roboto-font.css';
+
+/** Global */
+* { padding: 0; margin: 0; box-sizing:border-box;}
+
+html, body {
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	font-weight: 400;
+	font-size: 12px;
+	height: 100%;
+	overflow: hidden;
+}
+body { 
+	background-color: #f7f7f7; 
+	overflow-x: auto;
+}
+h1, h2, h3, h4, h5 { font-size: 12px; }
+label{
+	font-family: Roboto-Medium, Arial, Helvetica, sans-serif;
+	font-weight: 500;
+}
+:focus { outline: none; }
+
+.ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wm { font-style: italic; color: #999999; }
+.placeholder { color: #999999; }
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+input[type="button"], button {
+	display: inline-block;
+	padding: 4px 10px;
+	background: #eeeeeb url('images/button-bg.png') repeat-x 0 100%;
+	background-size: 100% 100%;
+	border: 1px solid silver;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-family: Roboto-Medium, Arial, Helvetica, sans-serif;
+	font-weight: 500;
+	color: #555555;
+	cursor: pointer;
+}
+input[type="button"]:hover, button:hover { color: #000000; }
+input[type="button"][disabled], button[disabled] {
+	background-image: none;
+	border: 1px solid #dddddd;
+	color: #777777;
+	cursor: default;
+}
+
+input, input[type="text"], select { font-family: Roboto, Arial, Helvetica, sans-serif;
+	font-weight: 400;padding: 3px; font-size: 13px; border: 1px solid #aaaaaa; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
+
+input[type="text"].searchFld{
+	min-width: 476px;
+	border-radius: 11px;
+	margin-bottom: 4px;
+	padding: 4px;
+  	padding-left: 7px;
+}
+
+
+iframe { margin: 0 !important; }
+
+/** Global Exam */
+#loading, .loading {
+	background: #ffffff url('../images/spinner.gif') no-repeat 50% 50%;
+	position: fixed; width: 100%; height: 100%; left: 0; top: 0; z-index: 10000; opacity: 0.5;
+}
+.loading { position: absolute; } /* localized version of loading */
+.tabHighlight { color: #0082d1; font-size: 13px; position: absolute; top: -14px; left: 177px; }
+.errorInfo { background-color: #ffe9eb; border: 1px solid #e16760; border-radius: 5px; position: absolute; z-index: 15000; }
+.errorInfo .header { color: #9e4d4a; font-size: 14px; font-family: Roboto-Bold, Arial, Helvetica, sans-serif; font-weight: 700;padding: 10px; }
+.errorInfo .content {  color: #9e4d4a;   font-size: 12px; padding: 10px; text-align: justify; text-justify: inter-word; }
+.errorInfo .reportError { background: none repeat scroll 0 0 #e26961; border: 1px solid #de584c; box-shadow: none; color: #fbefee; float: right; margin-right: 15px;  padding: 6px 15px; }
+.errorInfo .ok { background: none repeat scroll 0 0 white; color: black; float: right; padding: 6px 15px; margin-right: 15px; }
+
+
+.btn {
+    -moz-user-select: none;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    font-family: Roboto-Medium, Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    line-height: 1.42857;
+    margin-bottom: 0;
+    padding: 5px 20px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+   	text-transform: uppercase;   	
+	box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.12), 0px 2px 2px 0px rgba(0,0,0,0.24); 
+	transition: all 200ms ease;   	
+}
+.btn:hover{
+	box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.12), 0px 8px 8px 0px rgba(0,0,0,0.24);
+}
+.btn-primary, .btn-primary:hover {
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    color: #fff;
+}
+.btn-secondary {
+    background-color: #fff;
+    border-color: #ccc;
+    color: #333;
+}
+.btn-secondary:hover {
+	background-color: #e6e6e6;
+	border-color: #adadad;
+	color: #333;
+}
+/** Individual planning styles **/
+#container{
+	margin: 20px auto;
+    padding: 20px;
+    width: 1000px;
+    position: relative;
+    height: calc(100% - 30px);
+    min-height: 400px;
+}
+.required {
+	margin-left: 3px;
+}
+.row {
+	margin-left: -10px;
+	margin-right: -10px;
+}
+.row [class*="col-"]{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/** Wizard styles **/
+.wizard > .content > .body {
+	bottom: 18px;
+    height: auto;
+    padding: 0;
+    top: 0;
+    width: 100%;
+}
+.wizard > .content > .body.current {
+	z-index: 10;
+}
+.wizard > .content > .body input {
+	font-size: 13px;
+}
+.wizard > .content > .body input:focus {
+	border-color: #66afe9;
+}
+.wizard > .content > .body label{
+	margin-bottom: 3px;
+	display: block;
+}
+
+
+
+
+.wizard > .actions {
+    bottom: 0px;
+    display: block;
+    padding: 15px 20px;
+    position: absolute;
+    right: 0;
+}
+.wizard > .actions > ul {
+	vertical-align: middle;
+}
+.wizard > .actions a, .wizard > .actions a:hover, .wizard > .actions a:active{
+	border-radius: 2px;
+	background-color: #2A6B97;
+	border: 1px solid #2a6b97;	
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    font-family: Roboto-Medium, Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    line-height: 1.42857;
+    margin-bottom: 0;
+    padding: 5px 20px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+   	text-transform: uppercase;   	
+	box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.12), 0px 2px 2px 0px rgba(0,0,0,0.24); 
+	transition: all 200ms ease;   	
+}
+.wizard > .actions a:hover{
+	box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.12), 0px 8px 8px 0px rgba(0,0,0,0.24);
+}
+
+.wizard > .actions .disabled a, .wizard > .actions .disabled a:hover, .wizard > .actions .disabled a:active{
+	border: 1px solid #ccc;	
+	box-shadow: none;
+}
+
+/*progressbar*/
+.wizard > .steps{
+	margin-top: 10px;
+	margin-bottom: 30px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 5px;
+	z-index:1;
+}
+.wizard > .steps .number{
+	display: block;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background-color: #2184be;
+	display: none;
+}
+.wizard > .steps a, .wizard > .steps a:hover, .wizard > .steps a:active{
+	text-align: center;
+	padding: 3px 0;
+	margin-top: 3px;
+	display: inline-block;
+	border-radius:0;
+	color: #aaa;
+}
+
+
+.wizard .steps ul {
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	overflow: hidden;
+	/*CSS counters to number the steps*/
+	counter-reset: step;
+	
+}
+.wizard .steps ul li {
+	list-style-type: none;
+	color: white;
+	text-transform: uppercase;
+	font-size: 13px;
+	width: 25%;
+	float: left;
+	position: relative;
+	text-align: center;
+}
+.wizard .steps ul li::before {
+	/*content: counter(step);*/
+	content: " ";
+	counter-increment: step;
+	width: 40px;
+	line-height: 40px;
+	height: 40px;
+	display: block;
+	font-size: 13px;
+	color: #fff;
+	background: #aaa;
+	border-radius: 50%;
+	margin: 0 auto 5px auto;
+	text-align:center;
+	position: relative;
+	z-index: 1;
+	font-family: Roboto-Bold, Arial, Helvetica, sans-serif;
+	font-weight: 700;
+	box-shadow: 0 0 0px 0px rgba(255, 255, 255, 1);
+	
+}
+/*progressbar connectors*/
+.wizard .steps ul li:after {
+	content: '';
+	width: 100%;
+	height: 3px;
+	background: #aaa;
+	position: absolute;
+	left: -50%;
+	top: 19px;
+	
+}
+.wizard .steps ul li:first-child:after {
+	/*connector not needed before the first step*/
+	content: none; 
+}
+.wizard > .steps .done a, .wizard > .steps .done a:hover, .wizard > .steps .done a:active{
+	color: #222;
+	background-color: transparent;
+}
+.wizard > .steps .current a, .wizard > .steps .current a:hover, .wizard > .steps .current a:active{
+	background-color: transparent;
+	color: #222;
+	font-family: Roboto-Bold, Arial, Helvetica, sans-serif;
+	font-weight: 700;
+	border-bottom: 3px solid #428bca;
+}
+.wizard > .steps .disabled a, .wizard > .steps .disabled a:hover, .wizard > .steps .disabled a:active{
+	color: #aaa;
+	background-color: transparent;
+}
+.wizard > .steps .done.disabled::before{
+	/*content: "\2713";*/
+	background: #aaa;
+	font-size: 16px;
+}
+
+/*marking active/completed steps green*/
+/*The number of the step and the connector before it = green*/
+
+.wizard .steps ul li.current:before,  .wizard .steps ul li.current:after,
+.wizard .steps ul li.done:before,  .wizard .steps ul li.done:after{
+	background: #428bca;
+	color: #fff;
+	
+}
+
+.wizard .steps ul li.disabled::before, .wizard .steps ul li.disabled::after{
+	background: #aaa;
+}
+
+.wizard .steps ul li i{
+	font-size: 21px;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    text-align: center;
+    top: 10px;
+    width: 100%;
+    z-index: 1000;
+    color: #fff;
+}
+
+.wizard .steps ul li:nth-child(2) i.fa::before{
+	content: "\f2bc";
+}
+.wizard .steps ul li:nth-child(3) i.fa::before{
+	content: "\f0c0";
+}
+.wizard .steps ul li:nth-child(4) i.fa::before{
+	/*content: "\f1ea";*/
+	content: "\f00a";
+}
+
+.wizard > .steps ul li.complete.disabled i.fa::before{
+	content: "\f00c";
+}
+
+
+.wizard .steps .subtitle{
+	display: block;
+	color: #666;
+	font-size: 10px;
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	font-weight: 400;
+}
+.wizard > .steps .disabled .subtitle{
+	color: #aaa;
+}
+.wizard > .content{
+	background-color: #fff;
+	height: calc(100% - 120px);
+	min-height: auto;
+	overflow-y: auto;
+	border-radius: 0;
+}
+.wizard > .content > .body > iframe {
+	height: 100%;
+}
+.clearfix::before, .clearfix::after {
+    content: " ";
+    display: table;
+}
+.clearfix::after {
+    clear: both;
+}
+.clearfix::before, .clearfix::after {
+    content: " ";
+    display: table;
+}
+
+#wizard{
+	background-color: #fff;
+    border-radius: 3px;
+    /*box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.14);*/
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);    
+    padding: 20px 20px 60px;
+    position: absolute;
+    top:0;
+    bottom:10px;
+    left:0;
+    right:0;
+}
+#cancelExamCreation{
+	position: absolute;
+	bottom: 25px;
+	left: 25px;
+}
+.date-wrapper{
+	position: relative;
+}
+/*
+.date-wrapper input{
+	padding-right: 30px;
+	background-image: url("../images/calendar.png");
+	background-size: 14px 14px;
+	background-position: right 8px center;
+	background-repeat: no-repeat;
+}
+*/
+.date-wrapper .date-icon{
+	color: #999;
+    font-size: 14px;
+    margin-top: -7px;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+}
+.date-wrapper .input-group{
+	display: table !important;
+}
+.date-wrapper .input-group .form-control{
+	display: table-cell !important;
+}
+.date-wrapper .input-group-addon{
+	cursor: pointer;
+	background-color: #f3f3f3;
+}
+
+.date-wrapper input:focus + .input-group-addon{
+	border-color:#66afe9;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+}
+.date-wrapper input.has-error + .input-group-addon{
+	border-width: 2px;
+	border-color: #a94442;
+	color: #a94442;
+}
+.ui-widget {
+	font-family:Roboto, Arial, Helvetica, sans-serif;
+	font-size: 13px;
+}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button{
+	font-family: Roboto-Medium, Arial, Helvetica, sans-serif;
+	font-weight: 500;
+}
+.ui-widget-header{
+	background-image: none;
+	background-color: #eee;
+}
+.ui-datepicker{
+	box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.12), 0px 8px 8px 0px rgba(0,0,0,0.24);
+	z-index: 100 !important;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+	background-image: none;
+	background-color: #fff;
+}
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus{
+	background-image: none;
+	background-color: #eee;	
+	border:0;
+	margin:0;
+}
+.ui-selectmenu-button{
+	height: 34px;
+	width: 100% !important;
+	border: 1px solid #ccc;
+}
+.ui-selectmenu-button span.ui-selectmenu-text{
+	padding: 6px 12px;
+	font-size: 13px;
+}
+.ui-selectmenu-menu .ui-menu{
+	box-sizing: content-box;
+	max-height: 200px;
+}
+.ui-menu .ui-menu-item{
+	padding: 5px 10px; 
+}
+.has-error{
+    border: 2px solid #a94442 !important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.finraReceivedDateWrapper, .initDeptReceivedDateWrapper, .examRegSignificanceWrapper .required{
+	display:none;
+}
+
+.message-container{
+    position: relative;
+    width: 100%;
+    transition: all 600ms ease;
+    opacity: 0;
+    padding: 10px 40px 10px 15px;
+    font-size: 13px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.24);
+    z-index: 20;
+    top: 108px;
+    /*background-color:rgba(255, 255, 255, 0.75);
+    border-top: 1px solid #f3f3f3;
+    border-bottom: 1px solid #f3f3f3;
+    */
+
+}
+.message-container .close{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    opacity: 1;
+    font-size:15px;
+    color: #767676;
+}
+.message-container.save_error .close{    
+    color: #a90000;
+}
+.message-container.save_success .close{    
+    color: #468847;
+}
+
+div.save_error{
+    color: #a90000;
+    background-color: #f2dede;
+    opacity: 1;    
+    border: 1px solid #efc3c3;
+}
+div.save_success{
+    background-color: #dff0d8;
+    color: #468847;
+    opacity: 1;
+    border: 1px solid #c9dfc0;
+}
+.additionalDetails {
+	text-align: center;
+}
+.examCreateMessage {
+	font-size: 17px;
+    padding: 20px;
+    vertical-align: middle;
+    display:none;
+    margin-bottom: 15px;
+    border-radius: 2px;
+}
+.examCreateMessage i{
+	font-size: 50px;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+.examCreateMessage > span{
+	position: relative;
+	top: 2px;	
+}
+.btn + .btn{
+	margin-left: 10px;
+}
+.btn i{
+	font-size: 13px;
+	margin-right: 10px;
+}
+#examStrategyBtn{
+	background-image: url("../images/knight.png");
+    background-position: 20px 6px;
+    background-repeat: no-repeat;
+    background-size: 12px auto;
+    padding-left: 43px;
+
+}
+#examWorkspaceBtn{
+	background-image: url("../images/examworkspace.png");
+    background-position: 20px 6px;
+    background-repeat: no-repeat;
+    background-size: 15px auto;
+    padding-left: 43px;
+
+}
+#additionalOptions {
+	margin-top: 50px;
+	display: none;
+}
+
+.overlay.examCreateOverlay{
+	display:none;
+	background-color: #f0f0f0;
+	opacity: 0.5;
+	z-index:9;
+}
+/*
+@media only screen and (max-width: 1023px) {
+	body {
+		min-width: 1024px;
+		overflow: auto;
+	}
+	
+}*/
